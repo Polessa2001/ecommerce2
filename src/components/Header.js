@@ -1,7 +1,13 @@
-import React from 'react';
-
+import React, { useContext } from 'react';
+import { SidebarContext } from '../contexts/SidebarContext';
 const Header = () => {
-  return <div>Header</div>;
+  useContext(SidebarContext);
+  return(
+    <div>
+      <div></div>
+      <div></div>
+    </div>
+  );
 };
 
 export default Header;

@@ -4,6 +4,7 @@ export const CartContext = createContext();
 
 const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const [itemAmount, setItemAmount] = useState(0);
   // add to cart
   const addToCart = (product, id) => {
     console.log(`item ${id} added to the cart`);
@@ -54,6 +55,9 @@ const CartProvider = ({ children }) => {
         }
       });
       setCart(newCart);
+    }
+    if (item.amount < 2) {
+      removeFromCart(id);
     }
   }
   return (

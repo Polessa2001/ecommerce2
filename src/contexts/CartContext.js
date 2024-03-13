@@ -1,9 +1,27 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 
 export const CartContext = createContext();
 
 const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const [itemAmount, setItemAmount] = useState(0);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    const total = cart.reduce((accumulator, currentItem) => {
+      return accumulator + currentItem.price * currentItem.amount;
+    }, 0);
+    console.log(total)
+    setTotal(total);
+  })
+  useEffect(() => {
+    if(cart) {
+      const amount = cart.reduce((accumulator, currentItem) => {
+        return accumulator + currentItem.amount;
+      }, 0);
+      setItemAmount(amount);
+    }
+  }, [cart]);
   // add to cart
   const addToCart = (product, id) => {
     console.log(`item ${id} added to the cart`);
@@ -27,7 +45,7 @@ const CartProvider = ({ children }) => {
     };
   console.log(cart);
   // remove from cart
-  const removeFromCart = (id) => {
+  const removeFromCart = (product, id) => {
     const newCart = cart.filter(item => {
       return item.id !== id;
     });
@@ -36,8 +54,31 @@ const CartProvider = ({ children }) => {
   const resetCart = () => {
     setCart([]);
   }
+  // increase amount
+  const increaseAmount = (id) => {
+    const item = cart.find(item => item.id === id);
+    addToCart(item ,id);
+    console.log(item);
+  }
+  // decrease amount
+  const decreaseAmount = (id) => {
+    const item = cart.find(item => item.id === id);
+    if (item) {
+      const newCart = cart.map(item => {
+        if(item.id === id) {
+          return {...item, amount: item.amount - 1}
+        } else {
+          return item
+        }
+      });
+      setCart(newCart);
+    }
+    if (item.amount < 2) {
+      removeFromCart(id);
+    }
+  }
   return (
-    <CartContext.Provider value={{cart, addToCart, removeFromCart, resetCart}}>
+    <CartContext.Provider value={{cart, addToCart, removeFromCart, resetCart, increaseAmount, decreaseAmount, itemAmount, total}}>
       {children}
     </CartContext.Provider>
   );
